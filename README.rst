@@ -50,6 +50,6 @@ Check out the source and switch to the 0.19 tag::
 
     git clone https://github.com/tblaschke/scikit-learn.git
     cd scikit-learn
-    git checkout 0.19
+    git checkout 0.19.1
     CFLAGS="-fopenmp -DCV_OMP=1" CXXFLAGS="-fofopenmp -DCV_OMP=1" LDFLAGS=-lgomp python setup.py build
     python setup.py install
