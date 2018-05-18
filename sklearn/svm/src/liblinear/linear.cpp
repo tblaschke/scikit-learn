@@ -2465,27 +2465,34 @@ model* train(const problem *prob, const parameter *param)
 			else
 			{
 				model_->w=Malloc(double, w_size*nr_class);
-				double *w=Malloc(double, w_size);
-				model_->n_iter=Malloc(int, nr_class);
+				#pragma omp parallel for private(i, j, k)
 				for(i=0;i<nr_class;i++)
 				{
+					problem sub_prob_omp;
+					sub_prob_omp.l = l;
+					sub_prob_omp.n = n;
+					sub_prob_omp.x = x;
+					sub_prob_omp.y = Malloc(double,l);
 					int si = start[i];
 					int ei = si+count[i];
 
+					double *w=Malloc(double, w_size);
 					k=0;
 					for(; k<si; k++)
-						sub_prob.y[k] = -1;
+						sub_prob_omp.y[k] = -1;
 					for(; k<ei; k++)
-						sub_prob.y[k] = +1;
-					for(; k<sub_prob.l; k++)
-						sub_prob.y[k] = -1;
+						sub_prob_omp.y[k] = +1;
+					for(; k<sub_prob_omp.l; k++)
+						sub_prob_omp.y[k] = -1;
 
-					model_->n_iter[i]=train_one(&sub_prob, param, w, weighted_C[i], param->C);
+					model_->n_iter[i]=train_one(&sub_prob_omp, param, w, weighted_C[i], param->C);
 
 					for(int j=0;j<w_size;j++)
 						model_->w[j*nr_class+i] = w[j];
+
+					free(sub_prob_omp.y);
+					free(w);
 				}
-				free(w);
 			}
 
 		}
@@ -2525,6 +2532,7 @@ void cross_validation(const problem *prob, const parameter *param, int nr_fold, 
 	for(i=0;i<=nr_fold;i++)
 		fold_start[i]=i*l/nr_fold;
 
+    #pragma omp parallel for private(i) schedule(dynamic)
 	for(i=0;i<nr_fold;i++)
 	{
 		int begin = fold_start[i];
