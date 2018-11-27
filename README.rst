@@ -32,6 +32,7 @@ scikit-learn requires:
 - Python (>= 2.7 or >= 3.4)
 - NumPy (>= 1.8.2)
 - SciPy (>= 0.13.3)
+- Cython
 
 For running the examples Matplotlib >= 1.3.1 is required. A few examples
 require scikit-image >= 0.9.3 and a few examples require pandas >= 0.13.1.
@@ -50,6 +51,6 @@ Check out the source and switch to the 0.19 tag::
 
     git clone https://github.com/tblaschke/scikit-learn.git
     cd scikit-learn
-    git checkout 0.19.1
-    CFLAGS="-fopenmp -DCV_OMP=1" CXXFLAGS="-fofopenmp -DCV_OMP=1" LDFLAGS=-lgomp python setup.py build
+    git checkout 0.19.1.1
+    CFLAGS="-fopenmp -DCV_OMP=1 -march=native" CXXFLAGS="-fofopenmp -DCV_OMP=1 -march=native" LDFLAGS=-lgomp python setup.py build
     python setup.py install
